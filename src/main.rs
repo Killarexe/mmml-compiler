@@ -1,12 +1,16 @@
 mod args;
 mod token;
 mod lexer;
+mod expression;
+mod statement;
+mod parser;
 
 use std::{io::Error, process::exit};
 
 use args::CompilerArgs;
 use clap::Parser;
 use lexer::Lexer;
+use statement::Statement;
 use token::Token;
 
 fn main() {
@@ -31,6 +35,13 @@ fn compile(args: CompilerArgs) -> Result<(), Error> {
 
     if args.verbose {
         println!("Tokens:\n{:#?}", tokens);
+    }
+
+    let mut parser: parser::Parser = parser::Parser::new(tokens);
+    let statement: Statement = parser.parse()?;
+
+    if args.verbose {
+        println!("Program:\n{:#?}", statement);
     }
     Ok(())
 }

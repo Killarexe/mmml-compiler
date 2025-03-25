@@ -5,6 +5,7 @@ pub enum TokenType {
     GreaterThan,
     LeftParen,
     RightParen,
+    Dot,
     Arobase,
     Number,
     EndOfFile

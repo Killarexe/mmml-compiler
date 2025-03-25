@@ -44,15 +44,6 @@ impl Lexer {
         self.current_char = '\0';
     }
 
-    fn peek(&self, offset: usize) -> char {
-        if !self.is_end_of_file() {
-            if let Some(ch) = self.source.get(self.current_index + offset) {
-                return *ch;
-            }
-        }
-        '\0'
-    }
-
     fn skip_whitespace(&mut self) {
         while self.current_char.is_whitespace() && !self.is_end_of_file() {
             self.advance();
@@ -91,6 +82,7 @@ impl Lexer {
                 '>' => result.push(self.token_char_advance(TokenType::GreaterThan)),
                 '[' => result.push(self.token_char_advance(TokenType::LeftParen)),
                 ']' => result.push(self.token_char_advance(TokenType::RightParen)),
+                '.' => result.push(self.token_char_advance(TokenType::Dot)),
                 '@' => result.push(self.token_char_advance(TokenType::Arobase)),
                 '%' => self.skip_line(),
                 ch => {
