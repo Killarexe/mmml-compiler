@@ -1,16 +1,14 @@
 mod args;
 mod token;
 mod lexer;
-mod expression;
-mod statement;
-mod parser;
+mod compiler;
 
 use std::{io::Error, process::exit};
 
 use args::CompilerArgs;
 use clap::Parser;
+use compiler::Compiler;
 use lexer::Lexer;
-use statement::Statement;
 use token::Token;
 
 fn main() {
@@ -37,11 +35,14 @@ fn compile(args: CompilerArgs) -> Result<(), Error> {
         println!("Tokens:\n{:#?}", tokens);
     }
 
-    let mut parser: parser::Parser = parser::Parser::new(tokens);
-    let statement: Statement = parser.parse()?;
+    let mut compiler: Compiler = Compiler::new(tokens);
+    let data: Vec<u8> = compiler.compile()?;
 
-    if args.verbose {
-        println!("Program:\n{:#?}", statement);
-    }
+    let array_name: String = args.get_output_path().file_name().unwrap().to_str().unwrap().to_uppercase();
+    let mut result: String = format!("unsigned char {}[{}] = {{", array_name, data.len());
+    result.push_str(&data.iter().map(|&byte| format!("0x{:02X}", byte)).collect::<Vec<String>>().join(", "));
+    result.push_str("};");
+    println!("Result:\n{}", result);
+
     Ok(())
 }

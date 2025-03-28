@@ -91,7 +91,7 @@ impl Lexer {
                         let column: usize = self.current_column;
                         self.advance();
                         if self.current_char == '+' || self.current_char == '#' {
-                            value.push(self.current_char);
+                            value.push('#');
                             self.advance();
                         }
                         let token: Token = Token::new(value, TokenType::Command, self.current_line, column);
