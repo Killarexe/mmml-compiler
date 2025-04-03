@@ -3,7 +3,7 @@ mod token;
 mod lexer;
 mod compiler;
 
-use std::{io::Error, process::exit};
+use std::{env::args, fs::File, io::{Error, Write}, process::exit};
 
 use args::CompilerArgs;
 use clap::Parser;
@@ -40,9 +40,12 @@ fn compile(args: CompilerArgs) -> Result<(), Error> {
 
     let array_name: String = args.get_output_path().file_name().unwrap().to_str().unwrap().to_uppercase();
     let mut result: String = format!("unsigned char {}[{}] = {{", array_name, data.len());
-    result.push_str(&data.iter().map(|&byte| format!("0x{:02X}", byte)).collect::<Vec<String>>().join(", "));
+    result.push_str(&data.iter().map(|&byte| format!("0x{:02X}", byte)).collect::<Vec<String>>().join(","));
     result.push_str("};");
     println!("Result:\n{}", result);
+
+    let mut file: File = File::create(args.get_output_path())?;
+    file.write_all(result.as_bytes())?;
 
     Ok(())
 }

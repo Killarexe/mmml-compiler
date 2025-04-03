@@ -93,7 +93,7 @@ impl Compiler {
             "O" => {
                 if number > 0 && number < 6 {
                     self.current_octave = number;
-                    return Ok(vec![0xD0 | number]);
+                    return Ok(vec![0xD0 | (number - 1)]);
                 }
                 Err(Error::new(
                     ErrorKind::Unsupported,
@@ -114,8 +114,9 @@ impl Compiler {
             },
             "M" => {
                 let num_of_macros: u8 = self.num_of_headers - 3;
-                if number <= num_of_macros {
-                    return Ok(vec![0xF2, number]);
+                let macro_id: u8 = number.wrapping_sub(1);
+                if macro_id <= num_of_macros {
+                    return Ok(vec![0xF2, macro_id]);
                 }
                 Err(Error::new(
                     ErrorKind::Unsupported,
@@ -146,7 +147,7 @@ impl Compiler {
                 }
                 self.current_octave -= 1;
                 self.advance();
-                Ok(vec![0xD0 | self.current_octave])
+                Ok(vec![0xD0 | (self.current_octave - 1)])
             },
             TokenType::GreaterThan => {
                 if self.current_octave >= 5 {
@@ -157,7 +158,7 @@ impl Compiler {
                 }
                 self.current_octave += 1;
                 self.advance();
-                Ok(vec![0xD0 | self.current_octave])
+                Ok(vec![0xD0 | (self.current_octave - 1)])
             }
             TokenType::LeftParen => {
                 self.advance();
@@ -189,7 +190,7 @@ impl Compiler {
         let num_of_headers: usize = self.tokens.clone().into_iter()
             .filter(|token| token.token_type == TokenType::Arobase)
             .collect::<Vec<Token>>()
-            .len() - 1;
+            .len();
         if num_of_headers > 254 {
             return Err(Error::new(
                 ErrorKind::Unsupported,
@@ -212,15 +213,17 @@ impl Compiler {
         }
         self.advance();
 
-        let mut headers_positions: Vec<usize> = Vec::new();
+        let mut headers_positions: Vec<usize> = vec![result.len()];
 
         while !self.is_end_of_file() {
             let mut compiled_command: Vec<u8> = self.compile_token()?;
             if compiled_command == [0xFF] {
-                headers_positions.push(result.len());
+                headers_positions.push(result.len() + 1);
             }
             result.append(&mut compiled_command);
         }
+
+        result.push(0xFF);
 
         if result.len() > u16::MAX.into() {
             return Err(Error::new(
