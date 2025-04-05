@@ -3,7 +3,7 @@ mod token;
 mod lexer;
 mod compiler;
 
-use std::{env::args, fs::File, io::{Error, Write}, process::exit};
+use std::{fs::File, io::{Error, Write}, process::exit};
 
 use args::CompilerArgs;
 use clap::Parser;
