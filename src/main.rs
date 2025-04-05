@@ -38,8 +38,7 @@ fn compile(args: CompilerArgs) -> Result<(), Error> {
     let mut compiler: Compiler = Compiler::new(tokens);
     let data: Vec<u8> = compiler.compile()?;
 
-    let array_name: String = args.get_output_path().file_name().unwrap().to_str().unwrap().to_uppercase();
-    let mut result: String = format!("unsigned char {}[{}] = {{", array_name, data.len());
+    let mut result: String = format!("unsigned char {}[{}] = {{", args.get_music_name(), data.len());
     result.push_str(&data.iter().map(|&byte| format!("0x{:02X}", byte)).collect::<Vec<String>>().join(","));
     result.push_str("};");
     println!("Result:\n{}", result);
