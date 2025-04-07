@@ -84,6 +84,7 @@ impl Lexer {
                 ']' => result.push(self.token_char_advance(TokenType::RightParen)),
                 '.' => result.push(self.token_char_advance(TokenType::Dot)),
                 '@' => result.push(self.token_char_advance(TokenType::Arobase)),
+                '&' => result.push(self.token_char_advance(TokenType::Command)),
                 '%' => self.skip_line(),
                 ch => {
                     if ch.is_alphabetic() {
