@@ -65,7 +65,7 @@ impl Compiler {
         if let Some(duration_number) = durations.iter().position(|&x| x == number) {
             if is_dotted {
                 self.advance();
-                return Ok(0x8 | (duration_number - 1) as u8 & 0x0F);
+                return Ok(0x8 | (duration_number - 1) as u8);
             }
             return Ok(duration_number as u8);
         }
@@ -253,6 +253,9 @@ impl Compiler {
                 }
                 self.current_octave -= 1;
                 self.advance();
+                if self.current_token.token_type == TokenType::LessThan {
+                    return self.compile_token();
+                }
                 Ok(vec![0xD0 | (self.current_octave - 1)])
             },
             TokenType::GreaterThan => {
@@ -264,6 +267,9 @@ impl Compiler {
                 }
                 self.current_octave += 1;
                 self.advance();
+                if self.current_token.token_type == TokenType::GreaterThan {
+                    return self.compile_token();
+                }
                 Ok(vec![0xD0 | (self.current_octave - 1)])
             },
             TokenType::LeftParen => self.compile_loop(),
@@ -314,10 +320,14 @@ impl Compiler {
         let mut headers_positions: Vec<usize> = vec![result.len()];
 
         while !self.is_end_of_file() {
+            let token: Token = self.current_token.clone();
             let mut compiled_command: Vec<u8> = self.compile_token()?;
             if compiled_command == [0xFF] {
                 headers_positions.push(result.len() + 1);
             }
+            //println!("Compiled {} into {:#04X?}.", token.to_string(), compiled_command);
+            //let mut buf: String = String::new();
+            //std::io::stdin().read_line(&mut buf);
             result.append(&mut compiled_command);
         }
 
