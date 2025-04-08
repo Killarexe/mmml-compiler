@@ -1,15 +1,6 @@
-mod args;
-mod token;
-mod lexer;
-mod compiler;
-
+use mmml_compiler::{args::CompilerArgs, compiler::Compiler, lexer::Lexer, token::Token};
 use std::{fs::File, io::{Error, Write}, process::exit};
-
-use args::CompilerArgs;
 use clap::Parser;
-use compiler::Compiler;
-use lexer::Lexer;
-use token::Token;
 
 fn main() {
     let args: CompilerArgs = CompilerArgs::parse();

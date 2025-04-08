@@ -306,6 +306,7 @@ impl Compiler {
                 format!("MMML files require 4 headers min. Found {}", num_of_headers)
             ));
         }
+        self.num_of_headers = num_of_headers as u8;
 
         result.append(&mut vec![0; num_of_headers * 2]);
 
@@ -320,7 +321,7 @@ impl Compiler {
         let mut headers_positions: Vec<usize> = vec![result.len()];
 
         while !self.is_end_of_file() {
-            let token: Token = self.current_token.clone();
+            //let token: Token = self.current_token.clone();
             let mut compiled_command: Vec<u8> = self.compile_token()?;
             if compiled_command == [0xFF] {
                 headers_positions.push(result.len() + 1);
