@@ -2,7 +2,7 @@
 
 ## About
 
-µMML Compiler or MMML Compiler is a compiler to compiler `.mmml` files into C array bytes to play with an [MMML driver](https://github.com/protodomemusic/mmml/tree/master).
+µMML Compiler or MMML Compiler is a compiler to compile `.mmml` files into C array bytes to play with an [MMML driver](https://github.com/protodomemusic/mmml/tree/master).
 
 ## What is µMML
 
@@ -12,7 +12,7 @@ The original µMML compiler is made by [protodomemusic](https://github.com/proto
 
 ## How to use
 
-If you want to use, here the use case:
+If you want to use, here's the use case:
 
 `mmml-compiler [OPTIONS] <INPUT_PATH>`
 
