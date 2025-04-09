@@ -31,6 +31,6 @@ jobs:
     - name: Upload Release Linux Build
       uses: actions/upload-artifact@v4
       with:
-        name: µMML Compiler Linux (Debug)
+        name: µMML Compiler Linux (Release)
         path: ./target/release/mmml-compiler
         retention-days: 7
