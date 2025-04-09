@@ -1,6 +1,15 @@
 use std::path::PathBuf;
 
-use clap::Parser;
+use clap::{Parser, ValueEnum};
+
+#[derive(Debug, Clone, Copy, Default, ValueEnum, PartialEq, Eq)]
+pub enum ExportType {
+    /// C code
+    #[default]
+    Code,
+    /// Raw binary
+    Raw
+}
 
 /// A Compiler to convert MMML files to C source data files.
 #[derive(Parser, Debug)]
@@ -11,6 +20,9 @@ pub struct CompilerArgs {
     /// Output file
     #[arg(short, long)]
     output_path: Option<PathBuf>,
+    /// Export type (C code or raw binary data)
+    #[arg(short, long)]
+    pub export_type: ExportType,
     /// Music name in the output file
     #[arg(short, long)]
     music_name: Option<String>,
@@ -21,7 +33,12 @@ pub struct CompilerArgs {
 
 impl CompilerArgs {
     pub fn get_output_path(&self) -> PathBuf {
-        self.output_path.clone().unwrap_or(self.input_path.with_extension("h"))
+        self.output_path.clone().unwrap_or(self.input_path.with_extension(
+            match self.export_type {
+                ExportType::Code => "c",
+                ExportType::Raw => "mbf" // µMML Binary File
+            }
+        ))
     }
 
     pub fn get_music_name(&self) -> String {
@@ -30,7 +47,10 @@ impl CompilerArgs {
         }
         if let Some(file_name) = self.get_output_path().to_str() {
             let file: Vec<&str> = file_name.split('.').collect();
-            return file[0].to_string().to_uppercase();
+            return file[0]
+                .to_string()
+                .to_uppercase()
+                .replace(&['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'], "");
         }
         String::from("Music")
     }
