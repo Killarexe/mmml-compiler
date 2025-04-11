@@ -321,19 +321,16 @@ impl Compiler {
         let mut headers_positions: Vec<usize> = vec![result.len()];
 
         while !self.is_end_of_file() {
-            //let token: Token = self.current_token.clone();
             let mut compiled_command: Vec<u8> = self.compile_token()?;
             if compiled_command == [0xFF] {
                 headers_positions.push(result.len() + 1);
             }
-            //println!("Compiled {} into {:#04X?}.", token.to_string(), compiled_command);
-            //let mut buf: String = String::new();
-            //std::io::stdin().read_line(&mut buf);
             result.append(&mut compiled_command);
         }
 
         result.push(0xFF);
-
+        //To prevent µMML player to crash & µMML driver to access out of bound.
+        result.push(0x00); 
         if result.len() > u16::MAX.into() {
             return Err(Error::new(
                 ErrorKind::Unsupported,
